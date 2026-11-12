@@ -1,0 +1,381 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="api.data.swzzmxsq.ST_PPTN_RData">
+    <select id="selectListIsDay" resultType="api.pojo.swzzmxsq.ST_PPTN_RPojo">
+        select STCD,SUM(DRP) DRP,Max(TM) TM from ST_PPTN_R
+        <where>
+            <if test="stime != null and stime != ''">
+                <![CDATA[ and TM >= #{stime} ]]>
+            </if>
+            <if test="etime != null and etime != ''">
+                <![CDATA[ and TM <= #{etime} ]]>
+            </if>
+            <if test="stcdList != null and stcdList.size() > 0">
+                and STCD in
+                <foreach collection="stcdList" open="(" close=")" item="stcd" separator=",">
+                    #{stcd}
+                </foreach>
+            </if>
+        </where>
+        group by STCD order by DRP desc
+    </select>
+    <select id="selectList" resultType="api.pojo.swzzmxsq.ST_PPTN_RPojo">
+        select STCD,DATE_FORMAT(TM,'%Y-%m-%d') as TM,SUM(DRP) as DRP from ST_PPTN_R
+        <where>
+            <if test="stime != null and stime != ''">
+                <![CDATA[ and TM >= #{stime} ]]>
+            </if>
+            <if test="etime != null and etime != ''">
+                <![CDATA[ and TM <= #{etime} ]]>
+            </if>
+            <if test="stcdList != null and stcdList.size() > 0">
+                and STCD in
+                <foreach collection="stcdList" open="(" close=")" item="stcd" separator=",">
+                    #{stcd}
+                </foreach>
+            </if>
+        </where>
+        group by STCD,DATE_FORMAT(TM,'%Y-%m-%d')
+    </select>
+
+    <select id="selectListByHouse" resultType="api.pojo.swzzmxsq.ST_PPTN_RPojo">
+        select STCD,MAX(DRP) as DRP from (
+        select STCD,DATE_FORMAT(TM,'%Y-%m-%d %H') as TM,SUM(DRP) as DRP from ST_PPTN_R
+        <where>
+            <if test="stime != null and stime != ''">
+                <![CDATA[ and TM > #{stime} ]]>
+            </if>
+            <if test="etime != null and etime != ''">
+                <![CDATA[ and TM <= #{etime} ]]>
+            </if>
+            <if test="stcdList != null and stcdList.size() > 0">
+                and STCD in
+                <foreach collection="stcdList" open="(" close=")" item="stcd" separator=",">
+                    #{stcd}
+                </foreach>
+            </if>
+        </where>
+        group by STCD,DATE_FORMAT(TM,'%Y-%m-%d %H')
+        ) as PPTN group by STCD order by DRP desc
+    </select>
+
+    <select id="selectListByTime" resultType="api.pojo.swzzmxsq.ST_PPTN_RPojo">
+        select STCD,convert(varchar(19), TM,120) as TM,DRP from ST_PPTN_R
+        <where>
+            <if test="stime != null and stime != ''">
+                <![CDATA[ and TM > #{stime} ]]>
+            </if>
+            <if test="etime != null and etime != ''">
+                <![CDATA[ and TM <= #{etime} ]]>
+            </if>
+            <if test="stcdList != null and stcdList.size() > 0">
+                and STCD in
+                <foreach collection="stcdList" open="(" close=")" item="stcd" separator=",">
+                    #{stcd}
+                </foreach>
+            </if>
+        </where>
+        and DRP>=0
+        order by TM asc
+    </select>
+    <select id="selectLists" resultType="api.pojo.swzzmxsq.ST_PPTN_RPojo">
+        select STCD,convert(varchar(19), TM,120) as TM,DRP from ST_PPTN_R
+        <where>
+            <if test="stime != null and stime != ''">
+                <![CDATA[ and TM >= #{stime} ]]>
+            </if>
+            <if test="etime != null and etime != ''">
+                <![CDATA[ and TM <= #{etime} ]]>
+            </if>
+            <if test="stcdList != null and stcdList.size() > 0">
+                and STCD in
+                <foreach collection="stcdList" open="(" close=")" item="stcd" separator=",">
+                    #{stcd}
+                </foreach>
+            </if>
+        </where>
+        and DRP>=0
+        order by TM asc
+    </select>
+
+    <select id="selectListLS" resultType="api.pojo.swzzmxsq.ST_PPTN_RPojo">
+        select STCD,convert(varchar(19), TM,120) as TM,DRP from ST_PPTN_R
+        <where>
+            <if test="stime != null and stime != ''">
+                <![CDATA[ and TM >= #{stime} ]]>
+            </if>
+            <if test="etime != null and etime != ''">
+                <![CDATA[ and TM <= #{etime} ]]>
+            </if>
+            <if test="stcdList != null and stcdList.size() > 0">
+                and STCD in
+                <foreach collection="stcdList" open="(" close=")" item="stcd" separator=",">
+                    #{stcd}
+                </foreach>
+            </if>
+            <if test="wth != null and wth != ''">
+                wth= #{wth}
+            </if>
+        </where>
+        order by TM asc
+    </select>
+
+    <select id="selectListByTimeNull" resultType="api.pojo.swzzmxsq.ST_PPTN_RPojo">
+        select STCD,convert(varchar(19), TM,120) as TM,DRP from ST_PPTN_R
+        <where>
+            <if test="stime != null and stime != ''">
+                <![CDATA[ and TM > #{stime} ]]>
+            </if>
+            <if test="etime != null and etime != ''">
+                <![CDATA[ and TM <= #{etime} ]]>
+            </if>
+            <if test="stcdList != null and stcdList.size() > 0">
+                and STCD in
+                <foreach collection="stcdList" open="(" close=")" item="stcd" separator=",">
+                    #{stcd}
+                </foreach>
+            </if>
+            and drp > 0
+        </where>
+    </select>
+
+    <insert id="insertAll" parameterType="api.pojo.swzzmxsq.ST_PPTN_RPojo">
+        insert into ST_PPTN_R(STCD,TM,DRP,INTV,PDR,DYP,WTH) values
+        <foreach collection="quPojo" item="pojo" separator=",">
+            (#{pojo.STCD},#{pojo.TM},#{pojo.DRP},#{pojo.INTV},#{pojo.PDR},#{pojo.DYP},#{pojo.WTH})
+        </foreach>
+    </insert>
+
+    <select id="selectListBySen" resultType="api.pojo.swzzmxsq.ST_PPTN_RDto">
+       Select c.year,x.STCD,TM,FORMAT(x.z1, 2) as z,case when x.stcd= #{stcd} and sum(x.z) is not null then count(x.stcd)+1 else count(x.stcd) end as orderIndex,ba.stnm
+       from (select b.ymdhm tm, b.STCD,b.z1, a.Z from (SELECT DATE_FORMAT(ST_RIVER_R.TM, '%m-%d') as ymdhm,
+        ST_RIVER_R.TM, ST_RIVER_R.Z as z1,  ST_RIVER_R.STCD FROM ST_RIVER_R
+        <where>
+            <if test="stcdList != null and stcdList.size() > 0">
+                and ( ST_RIVER_R.STCD in
+                <foreach collection="stcdList" open="(" close=")" item="stcd" separator=",">
+                    #{stcd}
+                </foreach>
+                )
+            </if>
+            <if test="etime != null and etime != ''">
+                AND (ST_RIVER_R.TM = DATE_FORMAT(#{etime},'%Y-%m-%d 08:00:00'))
+            </if>
+        </where>
+          ) b
+         left join (
+         SELECT stcd, Z, DATE_FORMAT(tt.TM, '%Y-%m-%d') as ymdhm
+        FROM st_river_th tt
+        <where>
+            <if test="stcdList != null and stcdList.size() > 0">
+                and (tt.STCD in
+                <foreach collection="stcdList" open="(" close=")" item="stcd" separator=",">
+                    #{stcd}
+                </foreach>
+                )
+            </if>
+            AND (DATE_FORMAT(tt.TM, '%H:%i:%s') = '08:00:00')
+            <if test="etime != null and etime != ''">
+                AND (DATE_FORMAT(tt.TM, '%m-%d') = DATE_FORMAT(#{etime},'%m-%d'))
+            </if>
+        </where>
+        ) a  on a.stcd = b.stcd   and a.Z >= b.z1
+         order by b.stcd, b.ymdhm desc ) x
+        left join
+        (
+        select stcd,count(DATE_FORMAT(tm,'%Y'))+1 as year from st_river_th
+        <where>
+            <if test="stcdList != null and stcdList.size() > 0">
+                and stcd in
+                <foreach collection="stcdList" open="(" close=")" item="stcd" separator=",">
+                    #{stcd}
+                </foreach>
+            </if>
+            and DATE_FORMAT(tm,'%m-%d')='01-01'
+        </where>
+        group by stcd
+        ) c
+        on x.STCD=c.stcd
+        left join st_stbprp_b ba on x.STCD=ba.stcd
+        group by c.year,x.STCD,x.z1,ba.stnm,TM
+    </select>
+
+    <select id="selectListDanZhanByHouse" resultType="api.pojo.swzzmxsq.ST_PPTN_RPojo">
+        select STCD,DATE_FORMAT(TM,'%Y-%m-%d %H') as TM,SUM(DRP) as DRP from ST_PPTN_R
+        <where>
+            <if test="stime != null and stime != ''">
+                <![CDATA[ and TM >= #{stime} ]]>
+            </if>
+            <if test="etime != null and etime != ''">
+                <![CDATA[ and TM <= #{etime} ]]>
+            </if>
+            <if test="stcdList != null and stcdList.size() > 0">
+                and STCD in
+                <foreach collection="stcdList" open="(" close=")" item="stcd" separator=",">
+                    #{stcd}
+                </foreach>
+            </if>
+        </where>
+        group by STCD,DATE_FORMAT(TM,'%Y-%m-%d %H')
+    </select>
+
+    <select id="selectListSumByHour" resultType="api.pojo.swzzmxsq.ST_PPTN_RPojo">
+        select STCD,DATE_FORMAT(DATE_ADD(TM, INTERVAL -5 MINUTE),'%Y-%m-%d %H')  as TM,SUM(DRP) as DRP from ST_PPTN_R
+        <where>
+            <if test="stime != null and stime != ''">
+                <![CDATA[ and TM > #{stime} ]]>
+            </if>
+            <if test="etime != null and etime != ''">
+                <![CDATA[ and TM <= #{etime} ]]>
+            </if>
+            <if test="stcdList != null and stcdList.size() > 0">
+                and STCD in
+                <foreach collection="stcdList" open="(" close=")" item="stcd" separator=",">
+                    #{stcd}
+                </foreach>
+            </if>
+            <if test="flag != null and flag != '' and flag == '1'">
+                and drp > 0
+            </if>
+        </where>
+        group by STCD,DATE_FORMAT(DATE_ADD(TM, INTERVAL -5 MINUTE),'%Y-%m-%d %H')  order by DRP desc
+    </select>
+
+    <select id="selectListSumByDay" resultType="api.pojo.swzzmxsq.ST_PPTN_RPojo">
+        select STCD,DATE_FORMAT(DATE_ADD(TM, INTERVAL -485 MINUTE),'%Y-%m-%d') as TM,SUM(DRP) as DRP from ST_PPTN_R
+        <where>
+            <if test="stime != null and stime != ''">
+                <![CDATA[ and TM > #{stime} ]]>
+            </if>
+            <if test="etime != null and etime != ''">
+                <![CDATA[ and TM <= #{etime} ]]>
+            </if>
+            <if test="stcdList != null and stcdList.size() > 0">
+                and STCD in
+                <foreach collection="stcdList" open="(" close=")" item="stcd" separator=",">
+                    #{stcd}
+                </foreach>
+            </if>
+            <if test="flag != null and flag != '' and flag == '1'">
+                and drp > 0
+            </if>
+        </where>
+        group by STCD,DATE_FORMAT(DATE_ADD(TM, INTERVAL -485 MINUTE),'%Y-%m-%d') order by DRP desc
+    </select>
+
+    <update id="upDateOne" parameterType="api.pojo.swzzmxsq.ST_PPTN_RPojo">
+        update ST_PPTN_R
+        <set>
+            <if test="DRP != null">
+                DRP=#{DRP},
+            </if>
+            <if test="WTH != null and WTH != ''">
+                WTH=#{WTH},
+            </if>
+        </set>
+        where STCD = #{STCD} and TM=#{TM}
+    </update>
+
+
+    <select id="selectListTotal" resultType="api.pojo.swzzmxsq.ST_PPTN_RPojo">
+        select STCD,SUM(DRP) DRP,Max(TM) TM from ST_PPTN_R
+        <where>
+            <if test="stime != null and stime != ''">
+                <![CDATA[ and TM > #{stime} ]]>
+            </if>
+            <if test="etime != null and etime != ''">
+                <![CDATA[ and TM <= #{etime} ]]>
+            </if>
+            <if test="stcdList != null and stcdList.size() > 0">
+                and STCD in
+                <foreach collection="stcdList" open="(" close=")" item="stcd" separator=",">
+                    #{stcd}
+                </foreach>
+            </if>
+        </where>
+        and DRP>=0
+        group by STCD
+        order by DRP desc
+    </select>
+
+    <select id="selectListIsLast" resultType="api.pojo.swzzmxsq.ST_PPTN_RPojo">
+        select STCD,Max(TM) TM from ST_PPTN_R
+        <where>
+            <if test="stime != null and stime != ''">
+                <![CDATA[ and TM >= #{stime} ]]>
+            </if>
+            <if test="etime != null and etime != ''">
+                <![CDATA[ and TM <= #{etime} ]]>
+            </if>
+            <if test="stcdList != null and stcdList.size() > 0">
+                and STCD in
+                <foreach collection="stcdList" open="(" close=")" item="stcd" separator=",">
+                    #{stcd}
+                </foreach>
+            </if>
+        </where>
+        group by STCD
+    </select>
+
+    <!--    SQL Server兼容版本：5分钟雨量数据按小时聚合-->
+    <select id="selectListHourly" resultType="api.pojo.swzzmxsq.ST_PPTN_RPojo">
+        SELECT
+        STCD,
+        CASE
+        WHEN DATEPART(MINUTE, TM) >= 5 THEN
+        DATEADD(HOUR, 1, DATEADD(HOUR, DATEDIFF(HOUR, 0, TM), 0))
+        ELSE
+        DATEADD(HOUR, DATEDIFF(HOUR, 0, TM), 0)
+        END AS TM,
+        SUM(DRP) AS DRP
+        FROM
+        ST_PPTN_R
+
+        <where>
+            <if test="stime != null and stime != ''">
+                <![CDATA[ and TM > #{stime} ]]>
+            </if>
+            <if test="etime != null and etime != ''">
+                <![CDATA[ and TM <= #{etime} ]]>
+            </if>
+            <if test="stcdList != null and stcdList.size() > 0">
+                and STCD in
+                <foreach collection="stcdList" open="(" close=")" item="stcd" separator=",">
+                    #{stcd}
+                </foreach>
+            </if>
+        </where>
+        and DRP>=0
+        GROUP BY
+        STCD,
+        CASE
+        WHEN DATEPART(MINUTE, TM) >= 5 THEN
+        DATEADD(HOUR, 1, DATEADD(HOUR, DATEDIFF(HOUR, 0, TM), 0))
+        ELSE
+        DATEADD(HOUR, DATEDIFF(HOUR, 0, TM), 0)
+        END
+        ORDER BY
+        STCD, TM
+    </select>
+
+    <update id="updateALL" parameterType="list">
+        <foreach collection="objList" item="obj" separator=";">
+            update ST_PPTN_R
+            <set>
+                <if test="obj.STCD != null and obj.STCD != ''">
+                    stcd= #{obj.STCD},
+                </if>
+                <if test="obj.TM != null and obj.TM != ''">
+                    tm= #{obj.TM},
+                </if>
+                <if test="obj.DRP != null">
+                    drp= #{obj.DRP},
+                </if>
+                <if test="obj.WTH != null and obj.WTH != ''">
+                    wth= #{obj.WTH},
+                </if>
+            </set>
+            where stcd = #{obj.STCD} and tm= #{obj.TM}
+        </foreach>
+    </update>
+</mapper>

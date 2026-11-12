@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="api.data.swzzmxsq.ST_PPTN_R_QUData">
+    <select id="selectList" resultType="api.pojo.swzzmxsq.ST_PPTN_R_QUPojo">
+        select *  from ST_PPTN_R_QU
+        <where>
+            <if test="stime != null and stime != ''">
+                <![CDATA[ and TM >= #{stime} ]]>
+            </if>
+            <if test="etime != null and etime != ''">
+                <![CDATA[ and TM <= #{etime} ]]>
+            </if>
+            <if test="stcdList != null and stcdList.size() > 0">
+                and STCD in
+                <foreach collection="stcdList" open="(" close=")" item="stcd" separator=",">
+                    #{stcd}
+                </foreach>
+            </if>
+        </where>
+        order by tm asc
+    </select>
+
+    <insert id="insertAll" parameterType="api.pojo.swzzmxsq.ST_PPTN_R_QUPojo">
+        insert into ST_PPTN_R_QU(STCD,TM,DRP,INTV,PDR,DYP,WTH,SOURCE) values
+        <foreach collection="quPojo" item="pojo" separator=",">
+            (#{pojo.STCD},#{pojo.TM},#{pojo.DRP},#{pojo.INTV},#{pojo.PDR},#{pojo.DYP},#{pojo.WTH},#{pojo.SOURCE})
+        </foreach>
+    </insert>
+
+    <update id="upDateOne" parameterType="api.pojo.swzzmxsq.ST_PPTN_R_QUPojo">
+        update ST_PPTN_R_QU
+        <set>
+            <if test="DRP != null">
+                DRP=#{DRP},
+            </if>
+            <if test="WTH != null and WTH != ''">
+                WTH=#{WTH},
+            </if>
+        </set>
+        where STCD = #{STCD} and TM=#{TM}
+    </update>
+    
+</mapper>

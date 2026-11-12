@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="api.data.swzzmxsq.ST_SCREENINGRULESData">
+    <select id="selectList" resultType="api.pojo.swzzmxsq.ST_SCREENINGRULESPojo">
+        select * from ST_SCREENINGRULES
+        <where>
+            <if test="STCDList != null and STCDList.size() > 0">
+                and id in
+                <foreach collection="STCDList" open="(" close=")" item="STCD" separator=",">
+                    #{STCD}
+                </foreach>
+            </if>
+            <if test="pathname != null and pathname != ''">
+                and type = #{pathname}
+            </if>
+            <if test="key != null and key != ''">
+                and (name like'%'+#{key}+'%' or note like'%'+#{key}+'%')
+            </if>
+        </where>
+        order by ordernum asc
+    </select>
+    <insert id="insertOne" parameterType="api.pojo.swzzmxsq.ST_SCREENINGRULESPojo">
+        insert into ST_SCREENINGRULES
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">
+                id,
+            </if>
+            <if test="name != null and name != ''">
+                name,
+            </if>
+            <if test="hour != null">
+                hour,
+            </if>
+            <if test="wvalue != null">
+                wvalue,
+            </if>
+            <if test="type != null and type != ''">
+                type,
+            </if>
+            <if test="note != null and note != ''">
+                note,
+            </if>
+            <if test="content != null and content != ''">
+                content,
+            </if>
+            <if test="marks != null and marks != ''">
+                marks,
+            </if>
+            <if test="wvaluemax != null">
+                wvaluemax,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">
+                #{id},
+            </if>
+            <if test="name != null and name != ''">
+                #{name},
+            </if>
+            <if test="hour != null">
+                #{hour},
+            </if>
+            <if test="wvalue != null">
+                #{wvalue},
+            </if>
+            <if test="type != null and type != ''">
+                #{type},
+            </if>
+            <if test="note != null and note != ''">
+                #{note},
+            </if>
+            <if test="content != null and content != ''">
+                #{content},
+            </if>
+            <if test="marks != null and marks != ''">
+                #{marks},
+            </if>
+            <if test="wvaluemax != null">
+                #{wvaluemax},
+            </if>
+        </trim>
+    </insert>
+    <update id="upDateOne" parameterType="api.pojo.swzzmxsq.ST_SCREENINGRULESPojo">
+        update ST_SCREENINGRULES
+        <set>
+            <if test="id != null and id != ''">
+                id=#{id},
+            </if>
+            <if test="name != null and name != ''">
+                name=#{name},
+            </if>
+            <if test="hour != null">
+                hour=#{hour},
+            </if>
+            <if test="wvalue != null">
+                wvalue=#{wvalue},
+            </if>
+            <if test="type != null and type != ''">
+                type=#{type},
+            </if>
+            <if test="note != null and note != ''">
+                note=#{note},
+            </if>
+            <if test="content != null and content != ''">
+                content=#{content},
+            </if>
+            <if test="marks != null and marks != ''">
+                marks=#{marks},
+            </if>
+            <if test="wvaluemax != null">
+                wvaluemax=#{wvaluemax},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+    <delete id="deleteOne">
+        delete from ST_SCREENINGRULES where id = #{STCD}
+    </delete>
+</mapper>

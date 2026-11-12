@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="api.data.swzzmxsq.ST_STBPRP_B_DISTANCEData">
+    <select id="selectList" resultType="api.pojo.swzzmxsq.ST_STBPRP_B_DISTANCEPojo">
+        select * from ST_STBPRP_B_DISTANCE
+        <where>
+            <if test="STCDList != null and STCDList.size() > 0">
+                and stcd in
+                <foreach collection="STCDList" open="(" close=")" item="stcd" separator=",">
+                    #{stcd}
+                </foreach>
+            </if>
+            <if test="sttp != null and sttp != ''">
+                and sttp = #{sttp}
+            </if>
+        </where>
+        order by distance asc
+    </select>
+    <insert id="insertOne" parameterType="api.pojo.swzzmxsq.ST_STBPRP_B_DISTANCEPojo">
+        insert into ST_STBPRP_B_DISTANCE
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="stcd != null and stcd != ''">
+                stcd,
+            </if>
+            <if test="stcddis != null and stcddis != ''">
+                stcddis,
+            </if>
+            <if test="distance != null and distance != ''">
+                distance,
+            </if>
+            <if test="sttp != null and sttp != ''">
+                sttp,
+            </if>
+            <if test="note != null and note != ''">
+                note,
+            </if>
+            <if test="content != null and content != ''">
+                content,
+            </if>
+            <if test="marks != null and marks != ''">
+                marks
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="stcd != null and stcd != ''">
+                #{stcd},
+            </if>
+            <if test="stcddis != null and stcddis != ''">
+                #{stcddis},
+            </if>
+            <if test="distance != null and distance != ''">
+                #{distance},
+            </if>
+            <if test="sttp != null and sttp != ''">
+                #{sttp},
+            </if>
+            <if test="note != null and note != ''">
+                #{note},
+            </if>
+            <if test="content != null and content != ''">
+                #{content},
+            </if>
+            <if test="marks != null and marks != ''">
+                #{marks},
+            </if>
+        </trim>
+    </insert>
+    <update id="upDateOne" parameterType="api.pojo.swzzmxsq.ST_STBPRP_B_DISTANCEPojo">
+        update ST_STBPRP_B_DISTANCE
+        <set>
+            <if test="stcd != null and stcd != ''">
+                stcd=#{stcd},
+            </if>
+            <if test="stcddis != null and stcddis != ''">
+                stcddis= #{stcddis},
+            </if>
+            <if test="distance != null and distance != ''">
+                distance=#{distance},
+            </if>
+            <if test="sttp != null and sttp != ''">
+                sttp=#{sttp},
+            </if>
+            <if test="note != null and note != ''">
+                note=#{note},
+            </if>
+            <if test="content != null and content != ''">
+                content=#{content},
+            </if>
+            <if test="marks != null and marks != ''">
+                marks=#{marks},
+            </if>
+        </set>
+        where STCD = #{STCD}
+    </update>
+    <delete id="deleteOne">
+        delete from ST_STBPRP_B_DISTANCE where STCD = #{stcd}
+    </delete>
+</mapper>

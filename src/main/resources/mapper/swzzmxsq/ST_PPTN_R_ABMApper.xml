@@ -1,0 +1,501 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="api.data.swzzmxsq.ST_PPTN_R_ABData">
+    <select id="selectList" resultType="api.pojo.swzzmxsq.ST_PPTN_R_ABPojo">
+        select   st_pptn_r_ab.stcd,convert(varchar(19), st_pptn_r_ab.tm,120) as tm,st_pptn_r_ab.drp,st_pptn_r_ab.type,st_pptn_r_ab.note,st_pptn_r_ab.content,st_pptn_r_ab.marks,st_pptn_r_ab.stcddis,st_pptn_r_ab.stcddisdrp,st_pptn_r_ab.status, ST_STBPRP_B.STNM,ST_STBPRP_B.LGTD,ST_STBPRP_B.LTTD,ST_STBPRP_B.STLC,ST_SCREENINGRULES.NAME from ST_PPTN_R_AB
+        inner join ST_STBPRP_B on ST_PPTN_R_AB.STCD=ST_STBPRP_B.STCD
+        inner join ST_SCREENINGRULES on ST_PPTN_R_AB.TYPE=ST_SCREENINGRULES.id
+        <where>
+            <if test="stime != null and stime != ''">
+                <![CDATA[ and TM >= #{stime} ]]>
+            </if>
+            <if test="etime != null and etime != ''">
+                <![CDATA[ and TM <= #{etime} ]]>
+            </if>
+            <if test="stcdList != null and stcdList.size() > 0">
+                and ST_PPTN_R_AB.STCD in
+                <foreach collection="stcdList" open="(" close=")" item="stcd" separator=",">
+                    #{stcd}
+                </foreach>
+            </if>
+            <if test="pathname != null and pathname.size() > 0">
+                 and ST_PPTN_R_AB.type in
+                <foreach collection="pathname" open="(" close=")" item="type" separator=",">
+                    #{type}
+                </foreach>
+            </if>
+            <if test="status != null and status != ''">
+                and ST_PPTN_R_AB.status = #{status}
+            </if>
+            <if test="content != null and content != ''">
+                and ST_PPTN_R_AB.content = #{content}
+            </if>
+
+            <if test="datasource != null and datasource != ''">
+                and ST_STBPRP_B.STLC= #{datasource}
+            </if>
+
+
+<!--            <if test="startindex != null and pagesize != null">-->
+<!--                limit #{startindex},#{pagesize}-->
+<!--            </if>-->
+        </where>
+        order by  tm desc
+    </select>
+
+    <select id="selectListpage" resultType="api.pojo.swzzmxsq.ST_PPTN_R_ABPojo">
+        select   ST_PPTN_R_AB.*,ST_STBPRP_B.STNM from
+        (
+        SELECT *, ROW_NUMBER() OVER(ORDER BY tm) AS rn
+        FROM
+        (
+            select * from ST_PPTN_R_AB
+            <where>
+                <if test="stime != null and stime != ''">
+                    <![CDATA[ and TM >= #{stime} ]]>
+                </if>
+                <if test="etime != null and etime != ''">
+                    <![CDATA[ and TM <= #{etime} ]]>
+                </if>
+                <if test="stcdList != null and stcdList.size() > 0">
+                    and ST_PPTN_R_AB.STCD in
+                    <foreach collection="stcdList" open="(" close=")" item="stcd" separator=",">
+                        #{stcd}
+                    </foreach>
+                </if>
+                <if test="pathname != null and pathname != ''">
+                    and ST_PPTN_R_AB.type = #{pathname}
+                </if>
+                <if test="status != null and status != ''">
+                    and ST_PPTN_R_AB.status = #{status}
+                </if>
+                <if test="datasource != null and datasource != ''">
+                    and ST_PPTN_R_AB.content = #{datasource}
+                </if>
+             and ST_PPTN_R_AB.type in('1','3','5','6','7')   and ST_PPTN_R_AB.content='minute'
+            </where>
+
+            union all
+
+            select * from ST_PPTN_R_AB
+            <where>
+                <if test="stime != null and stime != ''">
+                    <![CDATA[ and TM >= #{stime} ]]>
+                </if>
+                <if test="etime != null and etime != ''">
+                    <![CDATA[ and TM <= #{etime} ]]>
+                </if>
+                <if test="stcdList != null and stcdList.size() > 0">
+                    and ST_PPTN_R_AB.STCD in
+                    <foreach collection="stcdList" open="(" close=")" item="stcd" separator=",">
+                        #{stcd}
+                    </foreach>
+                </if>
+                <if test="pathname != null and pathname != ''">
+                    and ST_PPTN_R_AB.type = #{pathname}
+                </if>
+                <if test="status != null and status != ''">
+                    and ST_PPTN_R_AB.status = #{status}
+                </if>
+                <if test="datasource != null and datasource != ''">
+                    and ST_PPTN_R_AB.content = #{datasource}
+                </if>
+                and ST_PPTN_R_AB.type in('2','4')   and ST_PPTN_R_AB.content='day'
+            </where>
+        )
+        as allData
+
+
+        )  ST_PPTN_R_AB  inner join  ST_STBPRP_B on ST_PPTN_R_AB.STCD=ST_STBPRP_B.STCD
+        <where>
+            <if test="startindex != null and pagesize != null">
+                and rn between #{startindex}+1 and #{startindex}+#{pagesize}
+            </if>
+        </where>
+        order by  tm asc
+    </select>
+
+
+    <select id="selectCount" resultType="integer">
+        select   count(*) from
+        (
+        select * from ST_PPTN_R_AB
+        <where>
+            <if test="stime != null and stime != ''">
+                <![CDATA[ and TM >= #{stime} ]]>
+            </if>
+            <if test="etime != null and etime != ''">
+                <![CDATA[ and TM <= #{etime} ]]>
+            </if>
+            <if test="stcdList != null and stcdList.size() > 0">
+                and ST_PPTN_R_AB.STCD in
+                <foreach collection="stcdList" open="(" close=")" item="stcd" separator=",">
+                    #{stcd}
+                </foreach>
+            </if>
+            <if test="pathname != null and pathname != ''">
+                and ST_PPTN_R_AB.type = #{pathname}
+            </if>
+            <if test="status != null and status != ''">
+                and ST_PPTN_R_AB.status = #{status}
+            </if>
+            <if test="datasource != null and datasource != ''">
+                and ST_PPTN_R_AB.content = #{datasource}
+            </if>
+            and ST_PPTN_R_AB.type in('1','3','5','6','7')   and ST_PPTN_R_AB.content='minute'
+        </where>
+
+        union all
+
+        select * from ST_PPTN_R_AB
+        <where>
+            <if test="stime != null and stime != ''">
+                <![CDATA[ and TM >= #{stime} ]]>
+            </if>
+            <if test="etime != null and etime != ''">
+                <![CDATA[ and TM <= #{etime} ]]>
+            </if>
+            <if test="stcdList != null and stcdList.size() > 0">
+                and ST_PPTN_R_AB.STCD in
+                <foreach collection="stcdList" open="(" close=")" item="stcd" separator=",">
+                    #{stcd}
+                </foreach>
+            </if>
+            <if test="pathname != null and pathname != ''">
+                and ST_PPTN_R_AB.type = #{pathname}
+            </if>
+            <if test="status != null and status != ''">
+                and ST_PPTN_R_AB.status = #{status}
+            </if>
+            <if test="datasource != null and datasource != ''">
+                and ST_PPTN_R_AB.content = #{datasource}
+            </if>
+            and ST_PPTN_R_AB.type in('2','4')   and ST_PPTN_R_AB.content='day'
+        </where>
+        )
+        as allData
+    </select>
+
+<!--    按规则统计异常数据总数-->
+    <select id="selectListByRules" resultType="api.pojo.swzzmxsq.ST_PPTN_R_ABPojo">
+        select   alldata.TYPE,ST_SCREENINGRULES.NAME,alldata.ROWSCOUNT from ST_SCREENINGRULES
+        left join (
+        select TYPE,COUNT(*) as ROWSCOUNT from ST_PPTN_R_AB
+        inner join ST_STBPRP_B  on ST_PPTN_R_AB.STCD=ST_STBPRP_B.STCD
+        <where>
+            <if test="stime != null and stime != ''">
+                <![CDATA[ and TM >= #{stime} ]]>
+            </if>
+            <if test="etime != null and etime != ''">
+                <![CDATA[ and TM <= #{etime} ]]>
+            </if>
+            <if test="stcdList != null and stcdList.size() > 0">
+                and ST_PPTN_R_AB.STCD in
+                <foreach collection="stcdList" open="(" close=")" item="stcd" separator=",">
+                    #{stcd}
+                </foreach>
+            </if>
+            <if test="pathname != null and pathname != ''">
+                and ST_PPTN_R_AB.CONTENT = #{pathname}
+            </if>
+            <if test="stlc != null and stlc != ''">
+                and ST_STBPRP_B.STLC= #{stlc}
+            </if>
+        </where>
+        group by ST_PPTN_R_AB.TYPE
+        ) as alldata
+        on alldata.TYPE=ST_SCREENINGRULES.id
+        <where>
+            <if test="pathname != null and pathname != ''">
+                and ST_SCREENINGRULES.CONTENT LIKE   '%'+#{pathname}+'%'
+            </if>
+        </where>
+    </select>
+
+<!--    按行政分区统计异常数据总数-->
+    <select id="selectListByStlc" resultType="api.pojo.swzzmxsq.ST_PPTN_R_ABPojo">
+        select  STLC,COUNT(*) as ROWSCOUNT from ST_PPTN_R_AB
+        inner join ST_STBPRP_B  on ST_PPTN_R_AB.STCD=ST_STBPRP_B.STCD
+        <where>
+            <if test="stime != null and stime != ''">
+                <![CDATA[ and TM >= #{stime} ]]>
+            </if>
+            <if test="etime != null and etime != ''">
+                <![CDATA[ and TM <= #{etime} ]]>
+            </if>
+            <if test="stcdList != null and stcdList.size() > 0">
+                and ST_PPTN_R_AB.STCD in
+                <foreach collection="stcdList" open="(" close=")" item="stcd" separator=",">
+                    #{stcd}
+                </foreach>
+            </if>
+            <if test="pathname != null and pathname != ''">
+                and ST_PPTN_R_AB.CONTENT = #{pathname}
+            </if>
+            <if test="stlc != null and stlc != ''">
+                and ST_STBPRP_B.STLC= #{stlc}
+            </if>
+        </where>
+        group by ST_STBPRP_B.STLC
+    </select>
+
+<!--    按年份统计异常数据总数-->
+    <select id="selectListByYear" resultType="api.pojo.swzzmxsq.ST_PPTN_R_ABPojo">
+        select year(tm) as name,COUNT(*) as ROWSCOUNT from ST_PPTN_R_AB
+        inner join ST_STBPRP_B  on ST_PPTN_R_AB.STCD=ST_STBPRP_B.STCD
+        <where>
+            <if test="stime != null and stime != ''">
+                <![CDATA[ and TM >= #{stime} ]]>
+            </if>
+            <if test="etime != null and etime != ''">
+                <![CDATA[ and TM <= #{etime} ]]>
+            </if>
+            <if test="stcdList != null and stcdList.size() > 0">
+                and ST_PPTN_R_AB.STCD in
+                <foreach collection="stcdList" open="(" close=")" item="stcd" separator=",">
+                    #{stcd}
+                </foreach>
+            </if>
+            <if test="pathname != null and pathname != ''">
+                and ST_PPTN_R_AB.CONTENT = #{pathname}
+            </if>
+            <if test="stlc != null and stlc != ''">
+                and ST_STBPRP_B.STLC= #{stlc}
+            </if>
+        </where>
+        group by year(tm)
+        order by year(tm) asc
+    </select>
+
+
+
+
+    <!--    按规则统计异常数据总数：临近站和相邻站偏差用日数据-->
+    <select id="selectListByRulesAddDay" resultType="api.pojo.swzzmxsq.ST_PPTN_R_ABPojo">
+        select   alldata.TYPE,ST_SCREENINGRULES.NAME,alldata.ROWSCOUNT from ST_SCREENINGRULES
+        left join (
+        select TYPE,COUNT(*) as ROWSCOUNT from ST_PPTN_R_AB
+        inner join ST_STBPRP_B  on ST_PPTN_R_AB.STCD=ST_STBPRP_B.STCD
+        <where>
+            <if test="stime != null and stime != ''">
+                <![CDATA[ and TM >= #{stime} ]]>
+            </if>
+            <if test="etime != null and etime != ''">
+                <![CDATA[ and TM <= #{etime} ]]>
+            </if>
+            <if test="stcdList != null and stcdList.size() > 0">
+                and ST_PPTN_R_AB.STCD in
+                <foreach collection="stcdList" open="(" close=")" item="stcd" separator=",">
+                    #{stcd}
+                </foreach>
+            </if>
+            <if test="pathname != null and pathname != ''">
+                and ST_PPTN_R_AB.CONTENT = #{pathname}
+            </if>
+            <if test="stlc != null and stlc != ''">
+                and ST_STBPRP_B.STLC= #{stlc}
+            </if>
+            and ST_PPTN_R_AB.type in('1','3','5','6','7') and ST_PPTN_R_AB.content='minute'
+        </where>
+
+        group by ST_PPTN_R_AB.TYPE
+
+        union all
+
+        select TYPE,COUNT(*) as ROWSCOUNT from ST_PPTN_R_AB
+        inner join ST_STBPRP_B  on ST_PPTN_R_AB.STCD=ST_STBPRP_B.STCD
+        <where>
+            <if test="stime != null and stime != ''">
+                <![CDATA[ and TM >= #{stime} ]]>
+            </if>
+            <if test="etime != null and etime != ''">
+                <![CDATA[ and TM <= #{etime} ]]>
+            </if>
+            <if test="stcdList != null and stcdList.size() > 0">
+                and ST_PPTN_R_AB.STCD in
+                <foreach collection="stcdList" open="(" close=")" item="stcd" separator=",">
+                    #{stcd}
+                </foreach>
+            </if>
+            <if test="pathname != null and pathname != ''">
+                and ST_PPTN_R_AB.CONTENT = #{pathname}
+            </if>
+            <if test="stlc != null and stlc != ''">
+                and ST_STBPRP_B.STLC= #{stlc}
+            </if>
+            and ST_PPTN_R_AB.type in('2','4') and ST_PPTN_R_AB.content='day'
+        </where>
+        group by ST_PPTN_R_AB.TYPE
+
+
+        ) as alldata
+        on alldata.TYPE=ST_SCREENINGRULES.id
+        <where>
+            <if test="pathname != null and pathname != ''">
+                and ST_SCREENINGRULES.CONTENT LIKE   '%'+#{pathname}+'%'
+            </if>
+           and ST_SCREENINGRULES.marks='1'
+        </where>
+        order by ordernum asc
+    </select>
+    <!--    按行政分区统计异常数据总数：临近站和相邻站偏差用日数据-->
+    <select id="selectListByStlcAddDay" resultType="api.pojo.swzzmxsq.ST_PPTN_R_ABPojo">
+        select STLC,COUNT(*) as ROWSCOUNT from ST_STBPRP_B
+        inner join (
+        select * from ST_PPTN_R_AB
+        <where>
+            <if test="stime != null and stime != ''">
+                <![CDATA[ and TM >= #{stime} ]]>
+            </if>
+            <if test="etime != null and etime != ''">
+                <![CDATA[ and TM <= #{etime} ]]>
+            </if>
+            <if test="stcdList != null and stcdList.size() > 0">
+                and ST_PPTN_R_AB.STCD in
+                <foreach collection="stcdList" open="(" close=")" item="stcd" separator=",">
+                    #{stcd}
+                </foreach>
+            </if>
+            <if test="pathname != null and pathname != ''">
+                and ST_PPTN_R_AB.CONTENT = #{pathname}
+            </if>
+            and ST_PPTN_R_AB.type in('1','3','5','6','7') and ST_PPTN_R_AB.content='minute'
+        </where>
+        union  all
+        select * from ST_PPTN_R_AB
+        <where>
+            <if test="stime != null and stime != ''">
+                <![CDATA[ and TM >= #{stime} ]]>
+            </if>
+            <if test="etime != null and etime != ''">
+                <![CDATA[ and TM <= #{etime} ]]>
+            </if>
+            <if test="stcdList != null and stcdList.size() > 0">
+                and ST_PPTN_R_AB.STCD in
+                <foreach collection="stcdList" open="(" close=")" item="stcd" separator=",">
+                    #{stcd}
+                </foreach>
+            </if>
+            <if test="pathname != null and pathname != ''">
+                and ST_PPTN_R_AB.CONTENT = #{pathname}
+            </if>
+            and ST_PPTN_R_AB.type in('2','4') and ST_PPTN_R_AB.content='day'
+        </where>
+        ) as  alldata
+        on alldata.STCD=ST_STBPRP_B.STCD
+        <where>
+            <if test="stlc != null and stlc != ''">
+                and ST_STBPRP_B.STLC= #{stlc}
+            </if>
+        </where>
+        group by ST_STBPRP_B.STLC
+    </select>
+    <!--    按年份统计异常数据总数：临近站和相邻站偏差用日数据-->
+    <select id="selectListByYearAddDay" resultType="api.pojo.swzzmxsq.ST_PPTN_R_ABPojo">
+        select year(tm) as name,COUNT(*) as ROWSCOUNT from
+        (
+        select *  from ST_PPTN_R_AB
+        <where>
+            <if test="stime != null and stime != ''">
+                <![CDATA[ and TM >= #{stime} ]]>
+            </if>
+            <if test="etime != null and etime != ''">
+                <![CDATA[ and TM <= #{etime} ]]>
+            </if>
+            <if test="stcdList != null and stcdList.size() > 0">
+                and ST_PPTN_R_AB.STCD in
+                <foreach collection="stcdList" open="(" close=")" item="stcd" separator=",">
+                    #{stcd}
+                </foreach>
+            </if>
+            <if test="pathname != null and pathname != ''">
+                and ST_PPTN_R_AB.CONTENT = #{pathname}
+            </if>
+            and ST_PPTN_R_AB.type in('1','3','5','6','7') and ST_PPTN_R_AB.content='minute'
+        </where>
+        union  all
+        select *  from ST_PPTN_R_AB
+        <where>
+            <if test="stime != null and stime != ''">
+                <![CDATA[ and TM >= #{stime} ]]>
+            </if>
+            <if test="etime != null and etime != ''">
+                <![CDATA[ and TM <= #{etime} ]]>
+            </if>
+            <if test="stcdList != null and stcdList.size() > 0">
+                and ST_PPTN_R_AB.STCD in
+                <foreach collection="stcdList" open="(" close=")" item="stcd" separator=",">
+                    #{stcd}
+                </foreach>
+            </if>
+            <if test="pathname != null and pathname != ''">
+                and ST_PPTN_R_AB.CONTENT = #{pathname}
+            </if>
+            and ST_PPTN_R_AB.type in('2','4') and ST_PPTN_R_AB.content='day'
+        </where>
+        ) as allData
+        inner join
+        ST_STBPRP_B
+        on allData.STCD=ST_STBPRP_B.STCD
+        <where>
+            <if test="stlc != null and stlc != ''">
+                and ST_STBPRP_B.STLC= #{stlc}
+            </if>
+        </where>
+        group by year(tm)
+        order by year(tm) asc
+    </select>
+
+
+    <update id="updateALL" parameterType="list">
+        <foreach collection="objList" item="obj" separator=";">
+            update ST_PPTN_R_AB
+            <set>
+                <if test="obj.STATUS != null and obj.STATUS != ''">
+                    STATUS= #{obj.STATUS},
+                </if>
+                <if test="obj.STCDDIS != null and obj.STCDDIS != ''">
+                    STCDDIS= #{obj.STCDDIS},
+                </if>
+                <if test="obj.STCDDISDRP != null">
+                    STCDDISDRP= #{obj.STCDDISDRP},
+                </if>
+            </set>
+            where stcd = #{obj.STCD} and tm= #{obj.TM} and type=#{obj.TYPE} and content=#{obj.CONTENT}
+        </foreach>
+    </update>
+
+    <update id="upDateOne" parameterType="api.pojo.swzzmxsq.ST_PPTN_R_ABPojo">
+        update ST_PPTN_R_AB
+        <set>
+            <if test="STATUS != null and STATUS != ''">
+                STATUS= #{STATUS},
+            </if>
+        </set>
+        where stcd = #{STCD} and tm= #{TM} and type=#{TYPE} and content=#{CONTENT}
+    </update>
+    <insert id="insertAll" parameterType="api.pojo.swzzmxsq.ST_PPTN_R_ABPojo">
+        insert into ST_PPTN_R_AB(STCD,TM,DRP,INTV,PDR,DYP,WTH,TYPE,STATUS,CONTENT,MARKS,STCDDIS,STCDDISDRP,NOTE) values
+        <foreach collection="quPojo" item="pojo" separator=",">
+            (#{pojo.STCD},#{pojo.TM},#{pojo.DRP},#{pojo.INTV},#{pojo.PDR},#{pojo.DYP},#{pojo.WTH},#{pojo.TYPE},#{pojo.STATUS},#{pojo.CONTENT},#{pojo.MARKS},#{pojo.STCDDIS},#{pojo.STCDDISDRP},#{pojo.NOTE})
+        </foreach>
+    </insert>
+
+
+    <delete id="deleteOne">
+        delete from ST_PPTN_R_AB where stcd = #{STCD} and tm= #{TM} and type=#{TYPE} and content=#{CONTENT}
+    </delete>
+
+    <delete id="deleteAll">
+        delete from ST_PPTN_R_AB
+        where
+        <foreach collection="list" item="item" separator=" OR ">
+            (
+                stcd = #{item.STCD}
+             AND  tm = #{item.TM}
+             AND type = #{item.TYPE}
+             AND content = #{item.CONTENT}
+            )
+        </foreach>
+    </delete>
+</mapper>

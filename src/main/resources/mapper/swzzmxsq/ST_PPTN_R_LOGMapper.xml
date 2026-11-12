@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="api.data.swzzmxsq.ST_PPTN_R_LOGData">
+    <select id="selectList" resultType="api.pojo.swzzmxsq.ST_PPTN_R_LOGPojo">
+        select ST_PPTN_R_LOG.*, ST_STBPRP_B.stnm from ST_PPTN_R_LOG  inner join ST_STBPRP_B on ST_PPTN_R_LOG.stcd=ST_STBPRP_B.stcd
+        <where>
+            <if test="STCDList != null and STCDList.size() > 0">
+                and ST_PPTN_R_LOG.stcd in
+                <foreach collection="STCDList" open="(" close=")" item="STCD" separator=",">
+                    #{STCD}
+                </foreach>
+            </if>
+            <if test="pathname != null and pathname != ''">
+                and type = #{pathname}
+            </if>
+            <if test="key != null and key != ''">
+                and ( note like'%'+#{key}+'%')
+            </if>
+            <if test="stime != null and stime != ''">
+                <![CDATA[ and tm >= #{stime} ]]>
+            </if>
+            <if test="etime != null and etime != ''">
+                <![CDATA[ and tm <= #{etime} ]]>
+            </if>
+            <if test="datatm != null and datatm != ''">
+                <![CDATA[ and datatm = #{datatm} ]]>
+            </if>
+        </where>
+        order by tm desc
+    </select>
+
+
+
+    <select id="selectListpage" resultType="api.pojo.swzzmxsq.ST_PPTN_R_LOGPojo">
+        select * from (
+        select ST_PPTN_R_LOG.*, ST_STBPRP_B.stnm, ROW_NUMBER() OVER(ORDER BY tm desc) AS rn from ST_PPTN_R_LOG
+        inner join ST_STBPRP_B
+        on ST_PPTN_R_LOG.stcd=ST_STBPRP_B.stcd
+        <where>
+            <if test="STCDList != null and STCDList.size() > 0">
+                and ST_PPTN_R_LOG.stcd in
+                <foreach collection="STCDList" open="(" close=")" item="STCD" separator=",">
+                    #{STCD}
+                </foreach>
+            </if>
+            <if test="pathname != null and pathname != ''">
+                and type = #{pathname}
+            </if>
+            <if test="key != null and key != ''">
+                and ( note like'%'+#{key}+'%')
+            </if>
+            <if test="stime != null and stime != ''">
+                <![CDATA[ and tm >= #{stime} ]]>
+            </if>
+            <if test="etime != null and etime != ''">
+                <![CDATA[ and tm <= #{etime} ]]>
+            </if>
+            <if test="datatm != null and datatm != ''">
+                <![CDATA[ and datatm = #{datatm} ]]>
+            </if>
+        </where>
+        )  as logdata
+        <where>
+            <if test="startindex != null and pagesize != null">
+                and rn between #{startindex}+1 and #{startindex}+#{pagesize}
+            </if>
+        </where>
+        order by tm desc
+    </select>
+
+
+    <select id="selectCount" resultType="integer">
+        select count(*)  from (
+        select ST_PPTN_R_LOG.*, ST_STBPRP_B.stnm, ROW_NUMBER() OVER(ORDER BY datatm) AS rn from ST_PPTN_R_LOG
+        inner join ST_STBPRP_B
+        on ST_PPTN_R_LOG.stcd=ST_STBPRP_B.stcd
+        <where>
+            <if test="STCDList != null and STCDList.size() > 0">
+                and ST_PPTN_R_LOG.stcd in
+                <foreach collection="STCDList" open="(" close=")" item="STCD" separator=",">
+                    #{STCD}
+                </foreach>
+            </if>
+            <if test="pathname != null and pathname != ''">
+                and type = #{pathname}
+            </if>
+            <if test="key != null and key != ''">
+                and  note like'%'+#{key}+'%'
+            </if>
+            <if test="stime != null and stime != ''">
+                <![CDATA[ and tm >= #{stime} ]]>
+            </if>
+            <if test="etime != null and etime != ''">
+                <![CDATA[ and tm <= #{etime} ]]>
+            </if>
+            <if test="datatm != null and datatm != ''">
+                <![CDATA[ and datatm = #{datatm} ]]>
+            </if>
+        </where>
+        )  as logdata
+    </select>
+
+
+
+    <insert id="insertOne" parameterType="api.pojo.swzzmxsq.ST_PPTN_R_LOGPojo">
+        insert into ST_PPTN_R_LOG
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">
+                id,
+            </if>
+            <if test="tm != null and tm != ''">
+                tm,
+            </if>
+            <if test="bvalue != null">
+                bvalue,
+            </if>
+            <if test="avalue != null">
+                avalue,
+            </if>
+            <if test="ower != null and ower != ''">
+                ower,
+            </if>
+            <if test="type != null and type != ''">
+                type,
+            </if>
+            <if test="note != null and note != ''">
+                note,
+            </if>
+            <if test="content != null and content != ''">
+                content,
+            </if>
+            <if test="marks != null and marks != ''">
+                marks,
+            </if>
+            <if test="datatm != null and datatm != ''">
+                datatm,
+            </if>
+            <if test="stcd != null and stcd != ''">
+                stcd,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">
+                #{id},
+            </if>
+            <if test="tm != null and tm != ''">
+                #{tm},
+            </if>
+            <if test="bvalue != null">
+                #{bvalue},
+            </if>
+            <if test="avalue != null">
+                #{avalue},
+            </if>
+            <if test="ower != null and ower != ''">
+                #{ower},
+            </if>
+            <if test="type != null and type != ''">
+                #{type},
+            </if>
+            <if test="note != null and note != ''">
+                #{note},
+            </if>
+            <if test="content != null and content != ''">
+                #{content},
+            </if>
+            <if test="marks != null and marks != ''">
+                #{marks},
+            </if>
+            <if test="datatm != null and datatm != ''">
+                #{datatm},
+            </if>
+            <if test="stcd != null and stcd != ''">
+                #{stcd},
+            </if>
+        </trim>
+    </insert>
+    <update id="upDateOne" parameterType="api.pojo.swzzmxsq.ST_PPTN_R_LOGPojo">
+        update ST_PPTN_R_LOG
+        <set>
+            <if test="id != null and id != ''">
+                id= #{id},
+            </if>
+            <if test="tm != null and tm != ''">
+                tm=#{tm},
+            </if>
+            <if test="bvalue != null">
+                bvalue=#{bvalue},
+            </if>
+            <if test="avalue != null">
+                avalue=#{avalue},
+            </if>
+            <if test="ower != null and ower != ''">
+                ower=#{ower},
+            </if>
+            <if test="type != null and type != ''">
+                type=#{type},
+            </if>
+            <if test="note != null and note != ''">
+                note=#{note},
+            </if>
+            <if test="content != null and content != ''">
+                content= #{content},
+            </if>
+            <if test="marks != null and marks != ''">
+                marks=#{marks},
+            </if>
+            <if test="datatm != null and datatm != ''">
+                datatm=#{datatm},
+            </if>
+            <if test="stcd != null and stcd != ''">
+                stcd=#{stcd},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+    <delete id="deleteOne">
+        delete from ST_PPTN_R_LOG where id = #{STCD}
+    </delete>
+    <insert id="insertAll" parameterType="api.pojo.swzzmxsq.ST_PPTN_R_LOGPojo">
+        insert into ST_PPTN_R_LOG(
+        id,
+        tm,
+        bvalue,
+        avalue,
+        ower,
+        type,
+        note,
+        content,
+        marks,
+        datatm,
+        stcd
+        ) values
+        <foreach collection="quPojo" item="pojo" separator=",">
+              (
+            #{pojo.id},
+            #{pojo.tm},
+            #{pojo.bvalue},
+            #{pojo.avalue},
+            #{pojo.ower},
+            #{pojo.type},
+            #{pojo.note},
+            #{pojo.content},
+            #{pojo.marks},
+            #{pojo.datatm},
+            #{pojo.stcd}
+            )
+        </foreach>
+    </insert>
+</mapper>

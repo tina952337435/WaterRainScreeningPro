@@ -1,0 +1,3 @@
+sc delete WaterRainScreeningPro Service
+WaterRainScreeningPro.exe uninstall
+WaterRainScreeningPro.exe install
